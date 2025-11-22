@@ -22,11 +22,11 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
      // Đăng ký RabbitMQ client để inject vào EmailController
     ClientsModule.register([
       {
-        name: 'MAIL_SERVICE',
+        name: String(process.env.RABBIT_SERVICE),
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://guest:guest@localhost:5672'], 
-          queue: 'email_queue',
+          urls: [String(process.env.RABBIT_URL)], 
+          queue: process.env.RABBIT_QUEUE,
           queueOptions: { durable: true },
         },
       },

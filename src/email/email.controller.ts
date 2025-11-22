@@ -11,7 +11,7 @@ function sleep(ms: number) {
 export class EmailController {
   constructor(
     private readonly mailerService: MailerService,
-    @Inject('MAIL_SERVICE') private readonly client: ClientProxy
+    @Inject(String(process.env.RABBIT_SERVICE)) private readonly client: ClientProxy
   ) {}  
   @EventPattern('send_email')
   async handleSendEmail(@Payload() data: { to: string; subject: string; html: string }) {
