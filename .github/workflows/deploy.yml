@@ -40,11 +40,10 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /root/MICROSERVICE_EMAIL_SERVICE
-            pm2 stop email-service
             git pull origin master
             npm install
             npm run build
-            pm2 restart email-service
+            pm2 reload email-service
 
       - name: Notify Telegram Success
         if: success()
