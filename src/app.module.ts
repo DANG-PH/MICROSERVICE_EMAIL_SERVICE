@@ -10,7 +10,7 @@ import { ItemModule } from './item/item.module';
       envFilePath: '.env',     
     }),
     EmailModule,
-    ItemModule
+    ItemModule,
   ],
 })
 export class AppModule {}
