@@ -1,0 +1,59 @@
+import { Injectable, Inject, Logger } from '@nestjs/common';
+import type { ClientGrpc } from '@nestjs/microservices';
+import {
+    Empty,
+    Item,
+    ItemIdRequest,
+    ItemResponse,
+    ItemServiceClient,
+    ITEM_PACKAGE_NAME,
+    ItemServiceController,
+    ItemServiceControllerMethods,
+    ItemsResponse,
+    ITEM_SERVICE_NAME,
+    AddItemRequest,
+    AddMultipleItemsRequest,
+    MessageResponse,
+    UserIdRequest,
+    GetItemsByItemUuidsRequest,
+    GetItemsByItemUuidsResponse
+} from 'proto/item.pb';
+import { firstValueFrom } from 'rxjs';
+
+@Injectable()
+export class ItemService {
+  private readonly logger = new Logger(ItemService.name);
+  private itemGrpcService: ItemServiceClient;
+
+  constructor(
+    @Inject(ITEM_PACKAGE_NAME) private readonly client: ClientGrpc,
+  ) {}
+
+  onModuleInit() {
+    this.itemGrpcService = this.client.getService<ItemServiceClient>(ITEM_SERVICE_NAME);
+  }
+
+  async handleGetItemByUser(req: UserIdRequest): Promise<ItemsResponse> {
+    return firstValueFrom(this.itemGrpcService.getItemsByUser(req));
+  }
+
+  async handleAddItem(req: AddItemRequest): Promise<ItemResponse> {
+    return firstValueFrom(this.itemGrpcService.addItem(req));
+  }
+  
+  async handleUpdateItem(req: Item): Promise<ItemResponse> {
+    return firstValueFrom(this.itemGrpcService.updateItem(req));
+  }
+
+  async handleDeleteItem(req: ItemIdRequest): Promise<MessageResponse> {
+    return firstValueFrom(this.itemGrpcService.deleteItem(req));
+  }
+
+  async handleAddMultiItem(req: AddMultipleItemsRequest): Promise<ItemsResponse> {
+    return firstValueFrom(this.itemGrpcService.addMultipleItems(req));
+  }
+
+  async handleGetItemsByUuids(req: GetItemsByItemUuidsRequest): Promise<GetItemsByItemUuidsResponse> {
+    return firstValueFrom(this.itemGrpcService.getItemsByItemUuids(req));
+  }
+}

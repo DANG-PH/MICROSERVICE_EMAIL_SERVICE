@@ -2,6 +2,8 @@ import { Controller, Inject } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ClientProxy } from '@nestjs/microservices';
+import { ItemService } from 'src/item/item.service';
+import { AddItemRequest, Item } from 'proto/item.pb';
 
 function sleep(ms: number) {
   return new Promise((True, False) => setTimeout(True, ms));
@@ -11,6 +13,7 @@ function sleep(ms: number) {
 export class EmailController {
   constructor(
     private readonly mailerService: MailerService,
+    private readonly itemService: ItemService,
     @Inject(String(process.env.RABBIT_SERVICE)) private readonly client: ClientProxy
   ) {}  
   @EventPattern('send_email')
@@ -42,6 +45,27 @@ export class EmailController {
   ) {
     for (const email of data.emails) {
       this.client.emit('send_email', {to: email, subject: data.subject, html: data.html });
+    }
+  }
+  
+  @EventPattern('save_item')
+  async handleSaveItem(
+    @Payload() data: { data: AddItemRequest }
+  ) {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 1000;
+
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        await this.itemService.handleAddItem(data.data);
+        return;
+      } catch (error) {
+        if (attempt === MAX_RETRIES) {
+          throw error;
+        }
+        console.log(`⚠️ Lỗi save item, thử lại lần ${attempt} sau ${RETRY_DELAY * attempt}ms`);
+        await sleep(RETRY_DELAY * attempt); // dùng sleep có sẵn
+      }
     }
   }
 }
