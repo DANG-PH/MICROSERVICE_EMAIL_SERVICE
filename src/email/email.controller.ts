@@ -52,6 +52,7 @@ export class EmailController {
   async handleSaveItem(
     @Payload() data: { data: AddItemRequest }
   ) {
+    console.log('Payload nhận:', JSON.stringify(data));
     const MAX_RETRIES = 3;
     const RETRY_DELAY = 1000;
 
