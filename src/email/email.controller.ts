@@ -50,7 +50,7 @@ export class EmailController {
   
   @EventPattern('save_item')
   async handleSaveItem(
-    @Payload() data: { data: AddItemRequest }
+    @Payload() data: { data: Item }
   ) {
     console.log('Payload nhận:', JSON.stringify(data));
     const MAX_RETRIES = 3;
@@ -58,7 +58,10 @@ export class EmailController {
 
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       try {
-        await this.itemService.handleAddItem(data.data);
+        await this.itemService.handleAddItem({
+          item: data.data,
+          user_id: data.data.userId
+        });
         return;
       } catch (error) {
         if (attempt === MAX_RETRIES) {
