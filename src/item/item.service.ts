@@ -16,7 +16,9 @@ import {
     MessageResponse,
     UserIdRequest,
     GetItemsByItemUuidsRequest,
-    GetItemsByItemUuidsResponse
+    GetItemsByItemUuidsResponse,
+    SwapItemRequest,
+    SwapItemResponse
 } from 'proto/item.pb';
 import { firstValueFrom } from 'rxjs';
 
@@ -55,5 +57,9 @@ export class ItemService {
 
   async handleGetItemsByUuids(req: GetItemsByItemUuidsRequest): Promise<GetItemsByItemUuidsResponse> {
     return firstValueFrom(this.itemGrpcService.getItemsByItemUuids(req));
+  }
+
+  async handleSwapItem(req: SwapItemRequest): Promise<SwapItemResponse> {
+    return firstValueFrom(this.itemGrpcService.swapItem(req));
   }
 }

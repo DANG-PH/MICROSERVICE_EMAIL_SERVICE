@@ -72,6 +72,21 @@ export class EmailController {
       }
     }
   }
+
+  @EventPattern('swap')
+  async handleSwap(
+    @Payload() data: {
+      offers: Array<{
+        itemUuids: string[];
+        swap_user_id: number;
+      }>;
+    }
+  ) {
+    for (const offer of data.offers) {
+      if (offer.itemUuids.length === 0) continue;
+      await this.itemService.handleSwapItem(offer);
+    }
+  }
 }
 
 // Sau khi producer publish message vào queue, các consumer sẽ subscribe để nhận từng message và xử lý.
