@@ -60,7 +60,7 @@ export class EmailController {
       try {
         await this.itemService.handleAddItem({
           item: data.data,
-          user_id: data.data.userId
+          userId: data.data.userId
         });
         return;
       } catch (error) {
@@ -78,7 +78,7 @@ export class EmailController {
     @Payload() data: {
       offers: Array<{
         itemUuids: string[];
-        swap_user_id: number;
+        swap_userId: number;
       }>;
     }
   ) {
